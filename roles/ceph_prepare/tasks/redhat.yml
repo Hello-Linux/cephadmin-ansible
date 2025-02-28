@@ -76,15 +76,6 @@
   when:
     - ansible_facts['distribution_version'] is version('7.0', operator='lt', strict=True) or ansible_facts['distribution_version'] is version('8.0', operator='ge', strict=True)
 
-- name: Download cephadm
-  copy:
-    src: redhat7_{{ CEPH_RELEASE }}_cephadm"
-    dest: /usr/bin/cephadm
-    mode: 'u+x'
-    remote_src: false
-  when:
-    - ansible_facts['distribution_version'] is version('8.0', operator='lt', strict=True)
-
 - name: Install Docker service
   copy:
     src: docker-20.10.10.tgz
