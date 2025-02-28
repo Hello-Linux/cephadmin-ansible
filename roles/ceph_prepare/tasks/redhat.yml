@@ -16,6 +16,15 @@
   when:
     - CEPH_INSTALL_MODE == "online"
 
+- name: remove centos/redhat default install package
+  package:
+    name:
+      - firewalld
+      - python-firewall
+      - firewalld-filesystem
+    state: absent
+  ignore_errors: true
+
 - name: Temporarily disables selinux for command
   shell: "setenforce 0"
   failed_when: false

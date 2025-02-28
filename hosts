@@ -1,11 +1,11 @@
 # 系统时钟同步NTP服务器
 [chrony]
-192.168.98.130
+ceph-01 ansible_host=192.168.98.130
 
 [ceph_cluster]
-ceph-01 ansible_host=192.168.98.130 deploy_role=main label="_admin" osd_devices="/dev/sdb"
-ceph-02 ansible_host=192.168.98.131 deploy_role=common label="mon,osd" osd_devices="/dev/sdb"
-ceph-03 ansible_host=192.168.98.132 deploy_role=common label="mgr,rgw" osd_devices="/dev/sdb"
+ceph-01 ansible_host=192.168.98.130 deploy_role=main label="_admin,osd" osd_devices="/dev/sdb"
+ceph-02 ansible_host=192.168.98.131 deploy_role=common label="mon,mgr,osd,rgw" osd_devices="/dev/sdb"
+ceph-03 ansible_host=192.168.98.132 deploy_role=common label="mon,mgr,osd" osd_devices="/dev/sdb"
 
 
 # 公共变量配置

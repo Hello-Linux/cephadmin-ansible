@@ -1,5 +1,8 @@
 # Use local server 
-server {{ groups['chrony'][0] }} iburst
+{% for host in groups['chrony'] %}
+server {{ hostvars[host].ansible_host }} iburst
+{% endfor %}
+
 
 # Record the rate at which the system clock gains/losses time.
 driftfile /var/lib/chrony/drift
