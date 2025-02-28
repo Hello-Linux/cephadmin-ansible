@@ -8,6 +8,3 @@
   when:
     - os_type in ["centos",'rocky']
     - ansible_facts['distribution_version'] is version('7.5', operator='ge', strict=True)
-
-- import_tasks: debian.yml
-  when: os_type in ["ubuntu","debian"]
