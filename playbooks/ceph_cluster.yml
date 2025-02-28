@@ -1,0 +1,11 @@
+# playbook for ceph
+---
+# Install cepdadm software in single mode
+- hosts:
+    - ceph_cluster
+  any_errors_fatal: true
+  gather_facts: yes
+  debugger: on_failed
+  roles:
+    - { role: ceph_prepare }
+    - { role: ceph_cluster }

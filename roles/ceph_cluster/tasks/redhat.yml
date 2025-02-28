@@ -1,0 +1,55 @@
+# tasks file for cephadm config
+---
+- name: Init Ceph cluster use bootstrap node
+  block:
+    - name: Bootstrap Ceph cluster with cephadm
+      shell: cephadm bootstrap --mon-ip {{ ansible_host }} --allow-fqdn-hostname 2>&1 | tee -a /tmp/ceph_install.log && touch /tmp/success_bootstrap.txt
+      args:
+        warn: no
+        creates: /tmp/success_bootstrap.txt
+
+    - name: Install ceph-command package to use all ceph command
+      shell: "cephadm add-repo --release {{ CEPH_RELEASE }} && sed -i 's#download.ceph.com#mirrors.aliyun.com/ceph#' /etc/yum.repos.d/ceph.repo && cephadm install ceph-common && touch /tmp/success_init_ceph_repo.txt"
+      args:
+        warn: no
+        creates: /tmp/success_init_ceph_repo.txt
+
+    - name: generate ssh pubkey
+      shell: ceph cephadm get-pub-key > ~/ceph.pub
+
+    - name: Copy public key to other nodes
+      command: "ssh-copy-id -f -i ~/ceph.pub -o StrictHostKeyChecking=no root@{{ item }}"
+      with_items: "{{ groups['ceph_cluster'] }}"
+      when:
+        - inventory_hostname != item
+
+    - name: Get cephadm SSH config
+      shell: ceph cephadm get-ssh-config > ssh_config
+
+    - name: config private key
+      shell: ceph config-key get mgr/cephadm/ssh_identity_key > ~/cephadm_private_key && chmod 0600 ~/cephadm_private_key
+
+    - name: Add hosts to Ceph cluster
+      shell: ceph orch host add {{ item }} {{ hostvars[item]['ansible_host'] }}
+      with_items: "{{ groups['ceph_cluster'] }}"
+      when:
+        - inventory_hostname != item
+  when: deploy_role == 'main'
+
+- name: Add user_defined labels to hosts
+  command: ceph orch host label add {{ inventory_hostname }} {{ item }}
+  loop: "{{ hostvars[inventory_hostname].label | split(',') }}"
+  when: hostvars[inventory_hostname].label is defined
+  delegate_to: "{{ groups['ceph_cluster'][0] }}"
+
+- name: Add OSD daemons
+  command: ceph orch daemon add osd {{ inventory_hostname }}:{{ item }}
+  loop: "{{ hostvars[inventory_hostname].osd_devices | split(',') }}"
+  when:
+    - hostvars[inventory_hostname].osd_devices is defined
+  delegate_to: "{{ groups['ceph_cluster'][0] }}"
+
+- name: Apply RGW service
+  command: ceph orch apply rgw myhammer '--placement=label:rgw count-per-host:1' --port={{ CEPH_RGW_PORT }}
+  delegate_to: "{{ groups['ceph_cluster'][0] }}"
+

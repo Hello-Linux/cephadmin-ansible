@@ -1,0 +1,27 @@
+# 系统时钟同步NTP服务器
+[chrony]
+192.168.98.130
+
+[ceph_cluster]
+ceph-01 ansible_host=192.168.98.130 deploy_role=main label="_admin" osd_devices="/dev/sdb"
+ceph-02 ansible_host=192.168.98.131 deploy_role=common label="mon,osd" osd_devices="/dev/sdb"
+ceph-03 ansible_host=192.168.98.132 deploy_role=common label="mgr,rgw" osd_devices="/dev/sdb"
+
+
+# 公共变量配置
+[all:vars]
+###################################################
+# 一 SSH远程连接方式
+###################################################
+ansible_ssh_user = root
+ansible_ssh_port = 22
+ansible_ssh_pass = 'buzhidao'
+ansible_ssh_private_key_file = "" # 秘钥路径
+###################################################
+# 二 安装模式选择
+###################################################
+CEPH_RELEASE = 'pacific'
+CEPH_INSTALL_MODE = "online" # offline: 离线安装; online: 在线安装(适用于有自己的软件源)
+CEPH_RGW_PORT = '8000'
+ntp_servers = ["ntp1.aliyun.com", "time1.cloud.tencent.com", "0.cn.pool.ntp.org"] # 设置时间源服务器
+local_network = "0.0.0.0/0" #设置允许内部时间同步的网络段，比如"10.0.0.0/8"，默认全部允许

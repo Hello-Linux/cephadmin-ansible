@@ -1,0 +1,27 @@
+- name: Run long-running command asynchronously
+  hosts: localhost
+  gather_facts: yes
+  vars:
+    drv_ssn_stdout_lines:
+      - "FW333120"
+      - "FW333121"
+      - "FW333122"
+      - "FW333123"
+      - "FW333124"
+      - "FW333125"
+      - "FW333126"
+      - "FW333127"
+      - "FW333128"
+      - "FW333129"
+      - "FW333130"
+      - "FW333131"
+  tasks:
+  - name:
+    debug:
+      msg: "{{ ansible_loop.revindex }}"
+    loop: "{{ range(1000) | batch(99) | list }}"
+    loop_control:
+      label: "{{ ansible_loop.index }}"
+      index_var: my_idx
+      extended: true
+

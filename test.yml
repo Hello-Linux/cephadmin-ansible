@@ -1,0 +1,27 @@
+- name: Run long-running command asynchronously
+  hosts: ceph_cluster
+  gather_facts: yes
+  vars:
+    drv_ssn_stdout_lines:
+      - "FW333120"
+      - "FW333121"
+      - "FW333122"
+      - "FW333123"
+      - "FW333124"
+      - "FW333125"
+      - "FW333126"
+      - "FW333127"
+      - "FW333128"
+      - "FW333129"
+      - "FW333130"
+      - "FW333131"
+    mytest: "hello,world,nihao,daye"
+  tasks:
+  - name: Add ceph static dns record
+    debug:
+      msg: "{{ hostvars[item]['ansible_default_ipv4']['address'] }} {{ item }}"
+    loop: "{{ groups['ceph_cluster'] }}" 
+  - name: Bootstrap Ceph cluster with cephadm
+    shell: ls -alh /tmp | tee -a /tmp/ceph_install.log && echo hello
+    args:
+      warn: no

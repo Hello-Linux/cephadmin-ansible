@@ -1,0 +1,5 @@
+{% set ns = namespace(iterated=false) %}
+{% for mydevice in  DEVICE_LIST %}
+    {% set ns.iterated = true %}
+{% endfor %}
+{% if ns.iterated %} did not iterate {% endif %}
