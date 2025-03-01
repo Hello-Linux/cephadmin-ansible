@@ -54,6 +54,10 @@
     - hostvars[inventory_hostname].osd_devices is defined
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
+- name: Reschedule mon service
+  command: cephadm shell -- ceph orch apply rgw myhammer '--placement=label:mon count-per-host:1'
+  delegate_to: "{{ groups['ceph_cluster'][0] }}"
+
 - name: Apply RGW service
   command: cephadm shell -- ceph orch apply rgw myhammer '--placement=label:rgw count-per-host:1' --port={{ CEPH_RGW_PORT }}
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
