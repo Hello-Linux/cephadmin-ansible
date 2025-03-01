@@ -20,7 +20,7 @@
         creates: /tmp/success_bootstrap.txt
 
     - name: generate ssh pubkey
-      shell: ceph cephadm get-pub-key > ~/ceph.pub
+      shell: cephadm shell -- ceph cephadm get-pub-key > ~/ceph.pub
 
     - name: Copy public key to other nodes
       command: "ssh-copy-id -f -i ~/ceph.pub -o StrictHostKeyChecking=no root@{{ item }}"
@@ -29,33 +29,33 @@
         - inventory_hostname != item
 
     - name: Get cephadm SSH config
-      shell: ceph cephadm get-ssh-config > ssh_config
+      shell: cephadm shell -- ceph cephadm get-ssh-config > ssh_config
 
     - name: config private key
-      shell: ceph config-key get mgr/cephadm/ssh_identity_key > ~/cephadm_private_key && chmod 0600 ~/cephadm_private_key
+      shell: cephadm shell -- ceph config-key get mgr/cephadm/ssh_identity_key > ~/cephadm_private_key && chmod 0600 ~/cephadm_private_key
 
     - name: Add hosts to Ceph cluster
-      shell: ceph orch host add {{ item }} {{ hostvars[item]['ansible_host'] }}
+      shell: cephadm shell -- ceph orch host add {{ item }} {{ hostvars[item]['ansible_host'] }}
       with_items: "{{ groups['ceph_cluster'] }}"
       when:
         - inventory_hostname != item
   when: deploy_role == 'main'
 
 - name: Add user_defined labels to hosts
-  command: ceph orch host label add {{ inventory_hostname }} {{ item }}
+  command: cephadm shell -- ceph orch host label add {{ inventory_hostname }} {{ item }}
   loop: "{{ hostvars[inventory_hostname].label | from_yaml }}"
   when: hostvars[inventory_hostname].label is defined
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
 - name: Add OSD daemons
-  command: ceph orch daemon add osd {{ inventory_hostname }}:{{ item }}
+  command: cephadm shell -- ceph orch daemon add osd {{ inventory_hostname }}:{{ item }}
   loop: "{{ hostvars[inventory_hostname].osd_devices | from_yaml }}"
   when:
     - hostvars[inventory_hostname].osd_devices is defined
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
 - name: Apply RGW service
-  command: ceph orch apply rgw myhammer '--placement=label:rgw count-per-host:1' --port={{ CEPH_RGW_PORT }}
+  command: cephadm shell -- ceph orch apply rgw myhammer '--placement=label:rgw count-per-host:1' --port={{ CEPH_RGW_PORT }}
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
   when:
     - ENABLE_RGW_SERVICE == 'true'
