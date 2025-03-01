@@ -50,17 +50,20 @@
 - name: Add OSD daemons
   command: cephadm shell -- ceph orch daemon add osd {{ inventory_hostname }}:{{ item }}
   loop: "{{ hostvars[inventory_hostname].osd_devices | from_yaml }}"
+  loop_control:
+    pause: 30
   when:
     - hostvars[inventory_hostname].osd_devices is defined
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
 - name: Reschedule mon service
   command: cephadm shell -- ceph orch apply rgw myhammer '--placement=label:mon count-per-host:1'
+  run_once: true
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
 - name: Apply RGW service
   command: cephadm shell -- ceph orch apply rgw myhammer '--placement=label:rgw count-per-host:1' --port={{ CEPH_RGW_PORT }}
+  run_once: true
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
   when:
-    - ENABLE_RGW_SERVICE == 'true'
-
+    - ENABLE_RGW_SERVICE == "true"
