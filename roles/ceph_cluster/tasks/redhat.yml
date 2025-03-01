@@ -2,17 +2,22 @@
 ---
 - name: Init Ceph cluster use bootstrap node
   block:
+    - name: Execute cephadm prepare-host command
+      command: cephadm prepare-host
+      register: cephadm_prepare_result
+
+    - name: Assert that the cepdadm requirements was successful
+      assert:
+        that:
+          - cephadm_prepare_result.rc == 0
+        fail_msg: "cephadm is dependent on environment problems!"
+        success_msg: "cephadm depends on the passing of the environment test!"
+
     - name: Bootstrap Ceph cluster with cephadm
       shell: cephadm bootstrap --mon-ip {{ ansible_host }} --allow-fqdn-hostname 2>&1 | tee -a /tmp/ceph_install.log && touch /tmp/success_bootstrap.txt
       args:
         warn: no
         creates: /tmp/success_bootstrap.txt
-
-    - name: Install ceph-command package to use all ceph command
-      shell: "cephadm add-repo --release {{ CEPH_RELEASE }} && sed -i 's#download.ceph.com#mirrors.aliyun.com/ceph#' /etc/yum.repos.d/ceph.repo && cephadm install ceph-common && touch /tmp/success_init_ceph_repo.txt"
-      args:
-        warn: no
-        creates: /tmp/success_init_ceph_repo.txt
 
     - name: generate ssh pubkey
       shell: ceph cephadm get-pub-key > ~/ceph.pub
@@ -52,4 +57,6 @@
 - name: Apply RGW service
   command: ceph orch apply rgw myhammer '--placement=label:rgw count-per-host:1' --port={{ CEPH_RGW_PORT }}
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
+  when:
+    - ENABLE_RGW_SERVICE == 'true'
 

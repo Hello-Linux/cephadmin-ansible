@@ -23,6 +23,9 @@ ansible_ssh_private_key_file = ""
 ###################################################
 CEPH_RELEASE = 'pacific'
 CEPH_INSTALL_MODE = "online" # online: Online installation offline: Offline installation
+ENABLE_RGW_SERVICE = "true"
+ENABLE_CEPHFS_SERVICE = "true"
+ENABLE_CEPHFS_NFS_SERVICE = "true"
 CEPH_RGW_PORT = '8000'
 ntp_servers = ["ntp1.aliyun.com", "time1.cloud.tencent.com", "0.cn.pool.ntp.org"] # ntp common servers
 local_network = "0.0.0.0/0" # Set the network segment that allows internal time synchronization
