@@ -24,8 +24,16 @@ ansible_ssh_private_key_file = ""
 CEPH_RELEASE = 'pacific'
 CEPH_INSTALL_MODE = "online" # online: Online installation offline: Offline installation
 ENABLE_RGW_SERVICE = "true"
-ENABLE_CEPHFS_SERVICE = "true"
-ENABLE_CEPHFS_NFS_SERVICE = "true"
 CEPH_RGW_PORT = '8000'
+RGW_NAME = "myrgw" # the rgw service name
+
+ENABLE_CEPHFS_SERVICE = "true"
+ENABLE_CEPHFS_NFS_SERVICE = "true" # open nfs export for CephFS
+NFS_POOL_NAME = "mynfs_pool"
+NFS_CLUSTER_ID = "mynfs" # the nfs cluster name
+NFS_CLUSTER_VIP = "192.168.98.133" # the nfs cluster ingress vip
+CEPF_FS_NAME = "myfs" # the CephFS volume name
+NFS_PSEUDO_PATH = "/data"
+
 ntp_servers = ["ntp1.aliyun.com", "time1.cloud.tencent.com", "0.cn.pool.ntp.org"] # ntp common servers
 local_network = "0.0.0.0/0" # Set the network segment that allows internal time synchronization
