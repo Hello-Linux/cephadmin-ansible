@@ -38,13 +38,13 @@
 
 - name: Add user_defined labels to hosts
   command: ceph orch host label add {{ inventory_hostname }} {{ item }}
-  loop: "{{ hostvars[inventory_hostname].label | split(',') }}"
+  loop: "{{ hostvars[inventory_hostname].label | from_yaml }}"
   when: hostvars[inventory_hostname].label is defined
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
 - name: Add OSD daemons
   command: ceph orch daemon add osd {{ inventory_hostname }}:{{ item }}
-  loop: "{{ hostvars[inventory_hostname].osd_devices | split(',') }}"
+  loop: "{{ hostvars[inventory_hostname].osd_devices | from_yaml }}"
   when:
     - hostvars[inventory_hostname].osd_devices is defined
   delegate_to: "{{ groups['ceph_cluster'][0] }}"

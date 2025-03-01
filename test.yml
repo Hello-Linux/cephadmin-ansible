@@ -17,11 +17,9 @@
       - "FW333131"
     mytest: "hello,world,nihao,daye"
   tasks:
-  - name: Add ceph static dns record
+  - name: Add user_defined labels to hosts
     debug:
-      msg: "{{ hostvars[item]['ansible_default_ipv4']['address'] }} {{ item }}"
-    loop: "{{ groups['ceph_cluster'] }}" 
-  - name: Bootstrap Ceph cluster with cephadm
-    shell: ls -alh /tmp | tee -a /tmp/ceph_install.log && echo hello
-    args:
-      warn: no
+      msg: "ceph orch host label add {{ inventory_hostname }} {{ item }}"
+    loop: "{{ hostvars[inventory_hostname].label | from_yaml }}"
+    when: hostvars[inventory_hostname].label is defined
+    delegate_to: "{{ groups['ceph_cluster'][0] }}"
