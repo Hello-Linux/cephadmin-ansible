@@ -26,14 +26,10 @@
     regexp: "^SELINUX="
     line: "SELINUX=disabled"
 
-- name: remove centos/redhat default install package
-  package:
-    name:
-      - firewalld
-      - python-firewall
-      - firewalld-filesystem
-    state: absent
-  ignore_errors: true
+- name: Stop firewalld service
+  service:
+    name: firewalld
+    state: stopped
 
 - name: Config chrony server
   template:
