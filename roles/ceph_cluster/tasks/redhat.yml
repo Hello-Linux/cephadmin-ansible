@@ -48,10 +48,7 @@
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
 - name: Add OSD daemons
-  command: cephadm shell -- ceph orch daemon add osd {{ inventory_hostname }}:{{ item }}
-  loop: "{{ hostvars[inventory_hostname].osd_devices | from_yaml }}"
-  loop_control:
-    pause: 30
+  command: cephadm shell -- ceph orch daemon add osd {{ inventory_hostname }}:data_devices={{ hostvars[inventory_hostname].osd_devices }}
   when:
     - hostvars[inventory_hostname].osd_devices is defined
   delegate_to: "{{ groups['ceph_cluster'][0] }}"

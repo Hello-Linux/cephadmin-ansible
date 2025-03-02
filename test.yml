@@ -19,7 +19,6 @@
   tasks:
   - name: Add user_defined labels to hosts
     debug:
-      msg: "ceph orch host label add {{ inventory_hostname }} {{ item }}"
-    loop: "{{ hostvars[inventory_hostname].label | from_yaml }}"
+      msg: "ceph orch daemon add osd {{ inventory_hostname }}:data_devices={{ hostvars[inventory_hostname].osd_devices }}"
     when: hostvars[inventory_hostname].label is defined
     delegate_to: "{{ groups['ceph_cluster'][0] }}"
