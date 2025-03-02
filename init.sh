@@ -3,12 +3,22 @@
 # Auth: Hello-Linux
 # Desc: initialize the cephadm Install Environment: Ansible、Docker、docker-composer
 
-SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-target_file="$SCRIPT_DIR/roles/ceph_prepare/files/docker-20.10.10.tgz"
-source_file="$SCRIPT_DIR/ansible_docker/docker_offline_package/docker-20.10.10.tgz"
-if [ ! -f "$target_file" ]; then
-  cp "$source_file" "$target_file"
-fi
+function init_myenv()
+{
+    SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+    target_file="$SCRIPT_DIR/roles/ceph_prepare/files/docker-20.10.10.tgz"
+    source_file="$SCRIPT_DIR/ansible_docker/docker_offline_package/docker-20.10.10.tgz"
+    if [ ! -f "$target_file" ]; then
+      cp "$source_file" "$target_file"
+    fi
+    os_version=$(cat /etc/os-release | grep -E 'NAME="CentOS Linux"|NAME="Rocky Linux"|NAME="Red Hat Enterprise Linux"' | head -n 1)
+    if [[ "$os_version" == *"CentOS"* || "$os_version" == *"Rocky"* || "$os_version" == *"Red Hat"* ]]; then
+        systemctl stop firewalld
+        systemctl disable firewalld
+    else
+        echo "the current os is not  CentOS 8、Rocky 8 or Red Hat 8."
+    fi
+}
 
 function init_Docker()
 {
@@ -94,6 +104,7 @@ while [[ $# -gt 0 ]]; do
     case $key in
         --docker)
             echo "Start docker"
+            init_myenv
             init_Docker
             break
             ;;
