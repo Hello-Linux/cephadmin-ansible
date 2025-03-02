@@ -68,46 +68,39 @@
   when:
     - ENABLE_RGW_SERVICE == "true"
 
-- name: Init CephFS
-  block:
-    - name: Apply CephFS service
-      command: cephadm shell -- ceph fs volume create {{ CEPF_FS_NAME }} --placement=3
-      run_once: true
-      delegate_to: "{{ groups['ceph_cluster'][0] }}"
+- name: Apply CephFS service
+  command: cephadm shell -- ceph fs volume create {{ CEPF_FS_NAME }} --placement=3
+  run_once: true
+  delegate_to: "{{ groups['ceph_cluster'][0] }}"
+  when:
+    - ENABLE_CEPHFS_SERVICE == "true"
 
+- name: CephFS Export over NFS 
+  block:
     - name: Apply CephFS service for nfs
       command: cephadm shell -- ceph mgr module enable nfs
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
-      when:
-        - ENABLE_CEPHFS_NFS_SERVICE == "true"
 
     - name: Create storage pools required by NFS
       command: cephadm shell -- ceph osd pool create {{ NFS_POOL_NAME }}
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
-      when:
-        - ENABLE_CEPHFS_NFS_SERVICE == "true"
     
     - name: Enable the nfs application in the storage pool
       command: cephadm shell -- ceph osd pool application enable {{ NFS_POOL_NAME }} nfs
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
-      when:
-        - ENABLE_CEPHFS_NFS_SERVICE == "true"
 
     - name: Create new nfs cluster
       command: cephadm shell -- ceph nfs cluster create {{ NFS_CLUSTER_ID }} 3 --ingress --virtual_ip {{ NFS_CLUSTER_VIP }}
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
-      when:
-        - ENABLE_CEPHFS_NFS_SERVICE == "true"
 
     - name: Example Create an nfs export of CephFS
       command: cephadm shell -- ceph nfs export create cephfs --cluster-id {{ NFS_CLUSTER_ID }} --pseudo-path {{ NFS_PSEUDO_PATH }} --fsname {{ CEPF_FS_NAME }} --squash no_root_squash
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
-      when:
-        - ENABLE_CEPHFS_NFS_SERVICE == "true"
   when:
     - ENABLE_CEPHFS_SERVICE == "true"
+    - ENABLE_CEPHFS_NFS_SERVICE == "true"
