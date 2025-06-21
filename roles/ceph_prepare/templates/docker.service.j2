@@ -6,6 +6,12 @@ Wants=network-online.target
 
 [Service]
 Type=notify
+{% if HTTP_PROXY %}
+Environment="HTTP_PROXY={{ HTTP_PROXY }}"
+{% endif %}
+{% if HTTPS_PROXY %}
+Environment="HTTPS_PROXY={{ HTTPS_PROXY }}"
+{% endif %}
 ExecStart=/usr/bin/dockerd --selinux-enabled=false
 ExecReload=/bin/kill -s HUP $MAINPID
 LimitNOFILE=infinity

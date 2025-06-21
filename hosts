@@ -12,6 +12,13 @@ ceph-03 ansible_host=192.168.124.22 deploy_role=common label=['mon','mgr','osd']
 
 # Comman variables
 [all:vars]
+
+################
+#Docker config
+################
+HTTP_PROXY = "http://192.168.2.105:7897" # the http proxy if you have
+HTTPS_PROXY = "http://192.168.2.105:7897" # the https proxy if you have
+
 ###################################################
 # 一 SSH config
 ###################################################
