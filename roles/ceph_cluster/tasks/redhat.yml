@@ -109,5 +109,15 @@
       command: cephadm shell -- rbd pool init {{ RBD_POOL_NAME }}
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
+
+    - name: Create the rbd device user in the storage pool
+      command: cephadm shell -- ceph auth get-or-create client.{{ RBD_USER_NAME }} mon 'allow r' osd 'allow rwx pool={{ RBD_POOL_NAME }}'
+      run_once: true
+      delegate_to: "{{ groups['ceph_cluster'][0] }}"
+
+    - name: Create the rbd image in the storage pool
+      command: cephadm shell -- rbd create --size {{ RBD_IMAGE_SIZE }} {{ RBD_POOL_NAME }}/{{ RBD_IMAGE_NAME }}
+      run_once: true
+      delegate_to: "{{ groups['ceph_cluster'][0] }}"
   when:
     - ENABLE_RDB_SERVICE == "true"

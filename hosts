@@ -55,4 +55,7 @@ NFS_PSEUDO_PATH = "/data"
 # ##################
 ENABLE_RDB_SERVICE = "true"
 RBD_POOL_NAME = "myrbd"
+RBD_USER_NAME = "blockchainer"
+RBD_IMAGE_NAME = "rbd_image_01"
+RBD_IMAGE_SIZE = "1024" #image size (in M/G/T) [default: M]
 RBD_PG_NUMBER = "128" # default is 32. for more info look(https://docs.ceph.com/en/reef/rados/operations/pgcalc/)
