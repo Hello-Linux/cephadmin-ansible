@@ -5,7 +5,7 @@ Automate the installation and management of cephadm
 ```
 Configure ssh non-encryption login between the bootstrap node and other data nodes
 ```
-## 2. Init the environment
+## 2. Run the following command on the deployment node
 ```
 sh init.sh --docker
 sh init.sh --ansible
