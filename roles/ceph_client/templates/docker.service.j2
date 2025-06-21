@@ -1,0 +1,27 @@
+[Unit]
+Description=Docker Application Container Engine
+Documentation=https://docs.docker.com
+After=network-online.target firewalld.service
+Wants=network-online.target
+
+[Service]
+Type=notify
+{% if HTTP_PROXY %}
+Environment="HTTP_PROXY={{ HTTP_PROXY }}"
+{% endif %}
+{% if HTTPS_PROXY %}
+Environment="HTTPS_PROXY={{ HTTPS_PROXY }}"
+{% endif %}
+ExecStart=/usr/bin/dockerd --selinux-enabled=false
+ExecReload=/bin/kill -s HUP $MAINPID
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+Delegate=yes
+KillMode=process
+Restart=on-failure
+StartLimitBurst=3
+StartLimitInterval=60s
+
+[Install]
+WantedBy=multi-user.target

@@ -9,3 +9,11 @@
   roles:
     - { role: ceph_prepare }
     - { role: ceph_cluster }
+
+- hosts:
+    - ceph_client
+  any_errors_fatal: true
+  gather_facts: yes
+  debugger: on_failed
+  roles:
+    - { role: ceph_client }
