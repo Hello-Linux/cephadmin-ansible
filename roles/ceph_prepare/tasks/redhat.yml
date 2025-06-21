@@ -102,6 +102,12 @@
         trim_blocks: true
         lstrip_blocks: true
 
+    - name: Ensure /etc/docker exists
+      file:
+        path: /etc/docker
+        state: directory
+        mode: '0755'
+
     - name: Create Docker daemon configuration
       copy:
         dest: /etc/docker/daemon.json
