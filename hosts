@@ -13,6 +13,9 @@ ceph-03 ansible_host=192.168.124.22 deploy_role=common label=['mon','mgr','osd']
 # Comman variables
 [all:vars]
 
+ntp_servers = ["ntp1.aliyun.com", "time1.cloud.tencent.com", "0.cn.pool.ntp.org"] # ntp common servers
+local_network = "0.0.0.0/0" # Set the network segment that allows internal time synchronization
+
 ################
 #Docker config
 ################
@@ -35,13 +38,21 @@ ENABLE_RGW_SERVICE = "false"
 CEPH_RGW_PORT = '8000'
 RGW_NAME = "myrgw" # the rgw service name
 
+######################
+#Cephfs storage config
+######################
 ENABLE_CEPHFS_SERVICE = "true"
 CEPF_FS_NAME = "myfs" # the CephFS volume name
 ENABLE_CEPHFS_NFS_SERVICE = "true" # open nfs export for CephFS
 NFS_POOL_NAME = "mynfs_pool"
+NFS_POOL_PG_NUMBER = "64"
 NFS_CLUSTER_ID = "mynfs" # the nfs cluster name
 NFS_CLUSTER_VIP = "192.168.98.133" # the nfs cluster ingress vip
 NFS_PSEUDO_PATH = "/data"
 
-ntp_servers = ["ntp1.aliyun.com", "time1.cloud.tencent.com", "0.cn.pool.ntp.org"] # ntp common servers
-local_network = "0.0.0.0/0" # Set the network segment that allows internal time synchronization
+####################
+# RDB storage config
+# ##################
+ENABLE_RDB_SERVICE = "true"
+RBD_POOL_NAME = "myrbd"
+RBD_PG_NUMBER = "128" # default is 32. for more info look(https://docs.ceph.com/en/reef/rados/operations/pgcalc/)

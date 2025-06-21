@@ -71,7 +71,7 @@
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
     - name: Create storage pools required by NFS
-      command: cephadm shell -- ceph osd pool create {{ NFS_POOL_NAME }}
+      command: cephadm shell -- ceph osd pool create {{ NFS_POOL_NAME }} {{ NFS_POOL_PG_NUMBER }} {{ NFS_POOL_PG_NUMBER }} replicated --autoscale-mode=on
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
     
@@ -92,3 +92,22 @@
   when:
     - ENABLE_CEPHFS_SERVICE == "true"
     - ENABLE_CEPHFS_NFS_SERVICE == "true"
+
+- name: Init userdefine rbd storage
+  block:
+    - name: Create storage pools required by rbd
+      command: cephadm shell -- ceph osd pool create {{ RBD_POOL_NAME }} {{ RBD_PG_NUMBER }} {{ RBD_PG_NUMBER }} replicated --autoscale-mode=on
+      run_once: true
+      delegate_to: "{{ groups['ceph_cluster'][0] }}"
+
+    - name: Enable the rbd application in the storage pool
+      command: cephadm shell -- ceph osd pool application enable {{ RBD_POOL_NAME }} rbd
+      run_once: true
+      delegate_to: "{{ groups['ceph_cluster'][0] }}"
+
+    - name: Start the rbd application in the storage pool
+      command: cephadm shell -- rbd pool init {{ RBD_POOL_NAME }}
+      run_once: true
+      delegate_to: "{{ groups['ceph_cluster'][0] }}"
+  when:
+    - ENABLE_RDB_SERVICE == "true"
