@@ -111,7 +111,7 @@
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
     - name: Create the rbd device user in the storage pool
-      command: cephadm shell -- ceph auth get-or-create client.{{ RBD_USER_NAME }} mon 'allow r' osd 'allow rwx pool={{ RBD_POOL_NAME }}'
+      command: cephadm shell -- ceph auth get-or-create client.{{ RBD_USER_NAME }} mon 'allow r' osd 'allow rwx pool={{ RBD_POOL_NAME }}' -o ceph.client.{{ RBD_USER_NAME }}.keyring
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
@@ -120,4 +120,4 @@
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
   when:
-    - ENABLE_RDB_SERVICE == "true"
+    - ENABLE_RBD_SERVICE == "true"

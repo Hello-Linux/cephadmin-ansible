@@ -1,6 +1,10 @@
 # playbook for ceph
 ---
 # Install cepdadm software in single mode
+- name: Gather facts from ceph_cluster group
+  hosts: ceph_cluster
+  gather_facts: yes
+
 - hosts:
     - ceph_cluster
   any_errors_fatal: true
