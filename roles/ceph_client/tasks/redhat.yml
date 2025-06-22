@@ -66,9 +66,9 @@
   when:
     - ansible_facts['distribution_version'] is version('7.0', operator='lt', strict=True) or ansible_facts['distribution_version'] is version('8.0', operator='ge', strict=True)
 
-- name: Init environment
+- name: Init ceph client environment
   block:
-    - name: add repo
+    - name: add ceph-common repo
       shell: cephadm add-repo --release {{ CEPH_RELEASE }}
       args:
         warn: no
@@ -77,3 +77,22 @@
       shell: cephadm install ceph-common
       args:
         warn: no
+
+    - name: Ensure /etc/ceph directory exists
+      file:
+        path: /etc/ceph
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Synchronize the authentication file to the ceph client
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: "{{ item.mode }}"
+      loop:
+        - { src: '/etc/ceph/ceph.conf', dest: '/etc/ceph/ceph.conf', mode: '0644' }
+        - { src: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', mode: '0600' }
