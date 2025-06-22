@@ -1,6 +1,5 @@
 ---
 # tasks file for cepdadm.prepare
-
 - name: Change hostname to match Ansible inventory
   hostname:
     name: "{{ inventory_hostname }}"
@@ -88,11 +87,12 @@
     - name: Fetch ceph authentication file to ansible control
       fetch:
         src: "{{ item.src }}"
-        dest: "{{ item.dest }"
+        dest: "{{ item.dest }}"
         flat: yes
       loop:
         - { src: '/etc/ceph/ceph.conf', dest: '/etc/ceph/ceph.conf', mode: '0644' }
         - { src: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', mode: '0600' }
+      delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
     - name: Ensure /etc/ceph directory exists
       file:
@@ -112,3 +112,8 @@
       loop:
         - { src: '/etc/ceph/ceph.conf', dest: '/etc/ceph/ceph.conf', mode: '0644' }
         - { src: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', mode: '0600' }
+
+    - name: mount ceph block device on linux client
+      shell: rbd map --id {{ RBD_USER_NAME }} {{ RBD_POOL_NAME }}/{{ RBD_IMAGE_NAME }}
+      args:
+        warn: no

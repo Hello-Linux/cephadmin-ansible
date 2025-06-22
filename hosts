@@ -72,4 +72,4 @@ RBD_PG_NUMBER = "128" # default is 32. for more info look(https://docs.ceph.com/
 RBD_USER_NAME = "blockchainer"
 RBD_IMAGE_NAME = "rbd_image_01"
 RBD_IMAGE_SIZE = "1024" #image size (in M/G/T) [default: M]
-RBD_IMAGE_FEATURE = "layering"
+RBD_IMAGE_FEATURE = "layering,striping"
