@@ -116,7 +116,7 @@
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
     - name: Create the rbd image in the storage pool
-      command: cephadm shell -- rbd create --size {{ RBD_IMAGE_SIZE }} {{ RBD_POOL_NAME }}/{{ RBD_IMAGE_NAME }}
+      command: cephadm shell -- rbd create --image-feature={{ RBD_IMAGE_FEATURE }} --size {{ RBD_IMAGE_SIZE }} {{ RBD_POOL_NAME }}/{{ RBD_IMAGE_NAME }}
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
   when:

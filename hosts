@@ -9,7 +9,7 @@ ceph-01 ansible_host=192.168.124.20 deploy_role=main label=["_admin",'mon','osd'
 ceph-02 ansible_host=192.168.124.21 deploy_role=common label=['mon','mgr','osd','rgw'] osd_devices="/dev/vdb,/dev/vdc"
 ceph-03 ansible_host=192.168.124.22 deploy_role=common label=['mon','mgr','osd'] osd_devices="/dev/vdb,/dev/vdc"
 
-[ceph_cluster]
+[ceph_linux_client]
 ceph-client01 ansible_host=192.168.124.10
 
 # Comman variables
@@ -72,3 +72,4 @@ RBD_USER_NAME = "blockchainer"
 RBD_IMAGE_NAME = "rbd_image_01"
 RBD_IMAGE_SIZE = "1024" #image size (in M/G/T) [default: M]
 RBD_PG_NUMBER = "128" # default is 32. for more info look(https://docs.ceph.com/en/reef/rados/operations/pgcalc/)
+RBD_IMAGE_FEATURE = "layering"

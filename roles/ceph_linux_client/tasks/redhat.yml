@@ -78,6 +78,22 @@
       args:
         warn: no
 
+    - name: Ensure local tmp directory exists
+      file:
+        path: "/etc/ceph"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+
+    - name: Fetch ceph authentication file to ansible control
+      fetch:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }"
+        flat: yes
+      loop:
+        - { src: '/etc/ceph/ceph.conf', dest: '/etc/ceph/ceph.conf', mode: '0644' }
+        - { src: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', mode: '0600' }
+
     - name: Ensure /etc/ceph directory exists
       file:
         path: /etc/ceph
