@@ -11,9 +11,17 @@
     - { role: ceph_cluster }
 
 - hosts:
-    - ceph_client
+    - ceph_linux_client
   any_errors_fatal: true
   gather_facts: yes
   debugger: on_failed
   roles:
-    - { role: ceph_client }
+    - { role: ceph_linux_client, when: "ENABLE_CEPH_LINUX_CLIENT == 'yes'", tags: ['linux_client'] }
+
+- hosts:
+    - ceph_kvm_client
+  any_errors_fatal: true
+  gather_facts: yes
+  debugger: on_failed
+  roles:
+    - { role: ceph_kvm_client, when: "ENABLE_CEPH_KVM_CLIENT == 'yes'", tags: ['kvm_client'] }

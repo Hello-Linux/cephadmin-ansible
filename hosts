@@ -9,12 +9,24 @@ ceph-01 ansible_host=192.168.124.20 deploy_role=main label=["_admin",'mon','osd'
 ceph-02 ansible_host=192.168.124.21 deploy_role=common label=['mon','mgr','osd','rgw'] osd_devices="/dev/vdb,/dev/vdc"
 ceph-03 ansible_host=192.168.124.22 deploy_role=common label=['mon','mgr','osd'] osd_devices="/dev/vdb,/dev/vdc"
 
+[ceph_cluster]
+ceph-client01 ansible_host=192.168.124.10
 
 # Comman variables
 [all:vars]
 
 ntp_servers = ["ntp1.aliyun.com", "time1.cloud.tencent.com", "0.cn.pool.ntp.org"] # ntp common servers
 local_network = "0.0.0.0/0" # Set the network segment that allows internal time synchronization
+
+###################
+# Ceph linux client
+###################
+ENABLE_CEPH_LINUX_CLIENT = "yes"
+
+###################
+# Ceph kvm client
+###################
+ENABLE_CEPH_KVM_CLIENT = "no"
 
 ################
 #Docker config
@@ -29,6 +41,7 @@ ansible_ssh_user = root
 ansible_ssh_port = 22
 ansible_ssh_pass = 'buzhidao'
 ansible_ssh_private_key_file = ""
+
 ###################################################
 # 二 Install mode config
 ###################################################
