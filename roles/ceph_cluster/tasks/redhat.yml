@@ -14,7 +14,7 @@
         success_msg: "cephadm depends on the passing of the environment test!"
 
     - name: Bootstrap Ceph cluster with cephadm
-      shell: cephadm bootstrap --mon-ip {{ ansible_host }} --allow-fqdn-hostname 2>&1 | tee -a /tmp/ceph_install.log && touch /tmp/success_bootstrap.txt
+      shell: cephadm bootstrap --mon-ip {{ ansible_host }} --allow-fqdn-hostname --cluster-network {{ CEPH_CLUSTER_NETWORK }} 2>&1 | tee -a /tmp/ceph_install.log && touch /tmp/success_bootstrap.txt
       args:
         warn: no
         creates: /tmp/success_bootstrap.txt
@@ -38,10 +38,11 @@
   when: hostvars[inventory_hostname].label is defined
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
-- name: Add OSD daemons
-  command: cephadm shell -- ceph orch daemon add osd {{ inventory_hostname }}:data_devices={{ hostvars[inventory_hostname].osd_devices }}
+- name: Add osd daemons
+  command: cephadm shell -- ceph orch daemon add osd {{ inventory_hostname }}:data_devices={{ hostvars[inventory_hostname].osd_data_devices }},db_devices={{ hostvars[inventory_hostname].osd_db_devices }},osds_per_device=1
   when:
-    - hostvars[inventory_hostname].osd_devices is defined
+    - hostvars[inventory_hostname].osd_data_devices is defined
+    - hostvars[inventory_hostname].osd_db_devices is defined
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
 - name: Reschedule mon service

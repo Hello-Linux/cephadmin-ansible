@@ -5,9 +5,9 @@ ceph-01 ansible_host=192.168.124.20
 [ceph_cluster]
 # Label: user-define label list
 # osd_devices: your osd device list
-ceph-01 ansible_host=192.168.124.20 deploy_role=main label=["_admin",'mon','osd'] osd_devices="/dev/vdb,/dev/vdc"
-ceph-02 ansible_host=192.168.124.21 deploy_role=common label=['mon','mgr','osd','rgw'] osd_devices="/dev/vdb,/dev/vdc"
-ceph-03 ansible_host=192.168.124.22 deploy_role=common label=['mon','mgr','osd'] osd_devices="/dev/vdb,/dev/vdc"
+ceph-01 ansible_host=192.168.124.20 deploy_role=main label=["_admin",'mon','osd'] osd_data_devices="/dev/vdb,/dev/vdc" osd_db_devices="/dev/vdd"
+ceph-02 ansible_host=192.168.124.21 deploy_role=common label=['mon','mgr','osd','rgw'] osd_data_devices="/dev/vdb,/dev/vdc" osd_db_devices="/dev/vdd"
+ceph-03 ansible_host=192.168.124.22 deploy_role=common label=['mon','mgr','osd'] osd_data_devices="/dev/vdb,/dev/vdc" osd_db_devices="/dev/vdd"
 
 [ceph_linux_client]
 ceph-client01 ansible_host=192.168.124.10
@@ -15,45 +15,37 @@ ceph-client01 ansible_host=192.168.124.10
 # Comman variables
 [all:vars]
 
+# NTP server config
 ntp_servers = ["ntp1.aliyun.com", "time1.cloud.tencent.com", "0.cn.pool.ntp.org"] # ntp common servers
 local_network = "0.0.0.0/0" # Set the network segment that allows internal time synchronization
 
-###################
 # Ceph linux client
-###################
 ENABLE_CEPH_LINUX_CLIENT = "yes"
 
-###################
 # Ceph kvm client
-###################
 ENABLE_CEPH_KVM_CLIENT = "no"
 
-################
 #Docker config
-################
 HTTP_PROXY = "http://192.168.2.105:7897" # the http proxy if you have
 HTTPS_PROXY = "http://192.168.2.105:7897" # the https proxy if you have
 
-###################################################
 # 一 SSH config
-###################################################
 ansible_ssh_user = root
 ansible_ssh_port = 22
 ansible_ssh_pass = 'buzhidao'
 ansible_ssh_private_key_file = ""
 
-###################################################
-# 二 Install mode config
-###################################################
+# Install config
 CEPH_RELEASE = 'pacific'
 CEPH_INSTALL_MODE = "online" # online: Online installation offline: Offline installation
+CEPH_CLUSTER_NETWORK = "192.168.124.0/25"
+
+# Ceph RGW service config
 ENABLE_RGW_SERVICE = "false"
 CEPH_RGW_PORT = '8000'
 RGW_NAME = "myrgw" # the rgw service name
 
-######################
 #Cephfs storage config
-######################
 ENABLE_CEPHFS_SERVICE = "false"
 CEPF_FS_NAME = "myfs" # the CephFS volume name
 ENABLE_CEPHFS_NFS_SERVICE = "false" # open nfs export for CephFS
@@ -63,9 +55,7 @@ NFS_CLUSTER_ID = "mynfs" # the nfs cluster name
 NFS_CLUSTER_VIP = "192.168.98.133" # the nfs cluster ingress vip
 NFS_PSEUDO_PATH = "/data"
 
-####################
 # RBD storage config
-# ##################
 ENABLE_RBD_SERVICE = "true"
 RBD_POOL_NAME = "myrbd"
 RBD_PG_NUMBER = "128" # default is 32. for more info look(https://docs.ceph.com/en/reef/rados/operations/pgcalc/)
