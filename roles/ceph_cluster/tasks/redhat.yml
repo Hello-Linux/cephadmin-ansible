@@ -41,8 +41,17 @@
 - name: Add osd daemons
   command: cephadm shell -- ceph orch daemon add osd {{ inventory_hostname }}:data_devices={{ hostvars[inventory_hostname].osd_data_devices }},db_devices={{ hostvars[inventory_hostname].osd_db_devices }},osds_per_device=1
   when:
-    - hostvars[inventory_hostname].osd_data_devices is defined
-    - hostvars[inventory_hostname].osd_db_devices is defined
+    - hostvars[inventory_hostname].osd_data_devices | default('') | length > 0
+    - hostvars[inventory_hostname].osd_db_devices | default('') | length > 0
+    - hostvars[inventory_hostname].osd_devices | default('') | length == 0
+  delegate_to: "{{ groups['ceph_cluster'][0] }}"
+
+- name: Add osd daemons
+  command: cephadm shell -- ceph orch daemon add osd {{ inventory_hostname }}:{{ hostvars[inventory_hostname].osd_devices }}
+  when:
+    - hostvars[inventory_hostname].osd_data_devices | default('') | length == 0
+    - hostvars[inventory_hostname].osd_db_devices | default('') | length == 0
+    - hostvars[inventory_hostname].osd_devices | default('') | length > 0
   delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
 - name: Reschedule mon service

@@ -4,10 +4,10 @@ ceph-01 ansible_host=192.168.124.20
 
 [ceph_cluster]
 # Label: user-define label list
-# osd_devices: your osd device list
-ceph-01 ansible_host=192.168.124.20 deploy_role=main label=["_admin",'mon','osd'] osd_data_devices="/dev/vdb,/dev/vdc" osd_db_devices="/dev/vdd"
-ceph-02 ansible_host=192.168.124.21 deploy_role=common label=['mon','mgr','osd','rgw'] osd_data_devices="/dev/vdb,/dev/vdc" osd_db_devices="/dev/vdd"
-ceph-03 ansible_host=192.168.124.22 deploy_role=common label=['mon','mgr','osd'] osd_data_devices="/dev/vdb,/dev/vdc" osd_db_devices="/dev/vdd"
+# osd_devices: your osd device list,If the data disk, db and wal logs of the osd are not stored separately, keep the variable osd_data_devices/osd_db_devices empty. Conversely, if separate storage is used, keep the variable osd_devices empty
+ceph-01 ansible_host=192.168.124.20 deploy_role=main label=["_admin",'mon','osd'] osd_devices="" osd_data_devices="/dev/vdb,/dev/vdc" osd_db_devices="/dev/vdd"
+ceph-02 ansible_host=192.168.124.21 deploy_role=common label=['mon','mgr','osd','rgw'] osd_devices="" osd_data_devices="/dev/vdb,/dev/vdc" osd_db_devices="/dev/vdd"
+ceph-03 ansible_host=192.168.124.22 deploy_role=common label=['mon','mgr','osd'] osd_devices="" osd_data_devices="/dev/vdb,/dev/vdc" osd_db_devices="/dev/vdd"
 
 [ceph_linux_client]
 ceph-client01 ansible_host=192.168.124.10
