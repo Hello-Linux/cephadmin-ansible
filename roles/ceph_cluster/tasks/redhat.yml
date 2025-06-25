@@ -106,29 +106,54 @@
 - name: Init userdefine rbd storage
   block:
     - name: Create storage pools required by rbd
-      command: cephadm shell -- ceph osd pool create {{ RBD_POOL_NAME }} {{ RBD_PG_NUMBER }} {{ RBD_PG_NUMBER }} replicated --autoscale-mode=on
+      command: cephadm shell -- ceph osd pool create {{ RBD_KERNEL_POOL_NAME }} {{ RBD_KERNEL_PG_NUMBER }} {{ RBD_KERNEL_PG_NUMBER }} replicated --autoscale-mode=on
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
     - name: Enable the rbd application in the storage pool
-      command: cephadm shell -- ceph osd pool application enable {{ RBD_POOL_NAME }} rbd
+      command: cephadm shell -- ceph osd pool application enable {{ RBD_KERNEL_POOL_NAME }} rbd
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
     - name: Start the rbd application in the storage pool
-      command: cephadm shell -- rbd pool init {{ RBD_POOL_NAME }}
+      command: cephadm shell -- rbd pool init {{ RBD_KERNEL_POOL_NAME }}
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
     - name: Create the rbd device user in the storage pool
-      shell: cephadm shell -- ceph auth get-or-create client.{{ RBD_USER_NAME }} mon 'allow r' osd 'allow rwx pool={{ RBD_POOL_NAME }}' > /etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring
+      shell: cephadm shell -- ceph auth get-or-create client.{{ RBD_KERNEL_USER_NAME }} mon 'allow r' osd 'allow rwx pool={{ RBD_KERNEL_POOL_NAME }}' > /etc/ceph/ceph.client.{{ RBD_KERNEL_USER_NAME }}.keyring
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
       when: deploy_role == 'main'
 
     - name: Create the rbd image in the storage pool
-      command: cephadm shell -- rbd create --image-feature={{ RBD_IMAGE_FEATURE }} --size {{ RBD_IMAGE_SIZE }} {{ RBD_POOL_NAME }}/{{ RBD_IMAGE_NAME }}
+      command: cephadm shell -- rbd create --image-feature={{ RBD_KERNEL_IMAGE_FEATURE }} --size {{ RBD_KERNEL_IMAGE_SIZE }} {{ RBD_KERNEL_POOL_NAME }}/{{ RBD_KERNEL_IMAGE_NAME }}
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
   when:
-    - ENABLE_RBD_SERVICE == "true"
+    - ENABLE_RBD_KERNEL_SERVICE == "true"
+
+- name: Init userdefine kvm rbd storage
+  block:
+    - name: Create storage pools required by rbd
+      command: cephadm shell -- ceph osd pool create {{ RBD_KVM_POOL_NAME }} {{ RBD_KVM_PG_NUMBER }} {{ RBD_KVM_PG_NUMBER }} replicated --autoscale-mode=on
+      run_once: true
+      delegate_to: "{{ groups['ceph_cluster'][0] }}"
+
+    - name: Enable the rbd application in the storage pool
+      command: cephadm shell -- ceph osd pool application enable {{ RBD_KVM_POOL_NAME }} rbd
+      run_once: true
+      delegate_to: "{{ groups['ceph_cluster'][0] }}"
+
+    - name: Start the rbd application in the storage pool
+      command: cephadm shell -- rbd pool init {{ RBD_KVM_POOL_NAME }}
+      run_once: true
+      delegate_to: "{{ groups['ceph_cluster'][0] }}"
+
+    - name: Create the rbd device user in the storage pool
+      shell: cephadm shell -- ceph auth get-or-create client.{{ RBD_KVM_USER_NAME }} mon 'allow r' osd 'allow rwx pool={{ RBD_KVM_POOL_NAME }}' > /etc/ceph/ceph.client.{{ RBD_KVM_USER_NAME }}.keyring
+      run_once: true
+      delegate_to: "{{ groups['ceph_cluster'][0] }}"
+      when: deploy_role == 'main'
+  when:
+    - ENABLE_RBD_KVM_SERVICE == "true"

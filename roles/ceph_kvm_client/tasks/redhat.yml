@@ -91,7 +91,7 @@
         flat: yes
       loop:
         - { src: '/etc/ceph/ceph.conf', dest: '/etc/ceph/ceph.conf', mode: '0644' }
-        - { src: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', mode: '0600' }
+        - { src: '/etc/ceph/ceph.client.{{ RBD_KVM_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_KVM_USER_NAME }}.keyring', mode: '0600' }
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
     - name: Ensure /etc/ceph directory exists
@@ -111,9 +111,25 @@
         mode: "{{ item.mode }}"
       loop:
         - { src: '/etc/ceph/ceph.conf', dest: '/etc/ceph/ceph.conf', mode: '0644' }
-        - { src: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', mode: '0600' }
+        - { src: '/etc/ceph/ceph.client.{{ RBD_KVM_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_KVM_USER_NAME }}.keyring', mode: '0600' }
 
-    - name: mount ceph block device on linux client
-      shell: rbd map --id {{ RBD_USER_NAME }} {{ RBD_POOL_NAME }}/{{ RBD_IMAGE_NAME }}
+    - name: generate the kvm secret xml file for ceph rbd
+      template:
+        src: ceph_secret.xml.j2
+        dest: /etc/ceph/ceph_secret.xml
+
+    - name: create the kvm secret for ceph rbd
+      shell: virsh secret-define --file /etc/ceph/ceph_secret.xml | awk '{print $3}'
+      args:
+        warn: no
+      register: kvm_secret_uuid
+
+    - name: Get the client.{{ RBD_KVM_USER_NAME }} key and save the key string to a file
+      shell: ceph auth get-key client.{{ RBD_KVM_USER_NAME }} | tee /tmp/client.{{ RBD_KVM_USER_NAME }}.key
+      args:
+        warn: no
+
+    - name: Set the UUID of the secret about kvm 
+      shell: sudo virsh secret-set-value --secret {{ kvm_secret_uuid.stdout }} --base64 $(cat /tmp/client.{{ RBD_KVM_USER_NAME }}.key) && rm /tmp/client.{{ RBD_KVM_USER_NAME }}.key /etc/ceph/ceph_secret.xml
       args:
         warn: no

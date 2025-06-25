@@ -92,7 +92,7 @@
         flat: yes
       loop:
         - { src: '/etc/ceph/ceph.conf', dest: '/etc/ceph/ceph.conf', mode: '0644' }
-        - { src: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', mode: '0600' }
+        - { src: '/etc/ceph/ceph.client.{{ RBD_KERNEL_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_KERNEL_USER_NAME }}.keyring', mode: '0600' }
 
     - name: Ensure /etc/ceph directory exists
       file:
@@ -111,4 +111,4 @@
         mode: "{{ item.mode }}"
       loop:
         - { src: '/etc/ceph/ceph.conf', dest: '/etc/ceph/ceph.conf', mode: '0644' }
-        - { src: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', mode: '0600' }
+        - { src: '/etc/ceph/ceph.client.{{ RBD_KERNEL_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_KERNEL_USER_NAME }}.keyring', mode: '0600' }

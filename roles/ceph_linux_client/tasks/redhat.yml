@@ -91,7 +91,7 @@
         flat: yes
       loop:
         - { src: '/etc/ceph/ceph.conf', dest: '/etc/ceph/ceph.conf', mode: '0644' }
-        - { src: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', mode: '0600' }
+        - { src: '/etc/ceph/ceph.client.{{ RBD_KERNEL_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_KERNEL_USER_NAME }}.keyring', mode: '0600' }
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
 
     - name: Ensure /etc/ceph directory exists
@@ -111,9 +111,9 @@
         mode: "{{ item.mode }}"
       loop:
         - { src: '/etc/ceph/ceph.conf', dest: '/etc/ceph/ceph.conf', mode: '0644' }
-        - { src: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_USER_NAME }}.keyring', mode: '0600' }
+        - { src: '/etc/ceph/ceph.client.{{ RBD_KERNEL_USER_NAME }}.keyring', dest: '/etc/ceph/ceph.client.{{ RBD_KERNEL_USER_NAME }}.keyring', mode: '0600' }
 
     - name: mount ceph block device on linux client
-      shell: rbd map --id {{ RBD_USER_NAME }} {{ RBD_POOL_NAME }}/{{ RBD_IMAGE_NAME }}
+      shell: rbd map --id {{ RBD_KERNEL_USER_NAME }} {{ RBD_KERNEL_POOL_NAME }}/{{ RBD_KERNEL_IMAGE_NAME }}
       args:
         warn: no
