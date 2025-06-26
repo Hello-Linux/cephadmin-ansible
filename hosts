@@ -12,6 +12,9 @@ ceph-03 ansible_host=192.168.124.22 deploy_role=common label=['mon','mgr','osd']
 [ceph_linux_client]
 ceph-client01 ansible_host=192.168.124.10
 
+[ceph_kvm_client]
+ceph-client01 ansible_host=192.168.124.10
+
 # Comman variables
 [all:vars]
 
@@ -20,10 +23,10 @@ ntp_servers = ["ntp1.aliyun.com", "time1.cloud.tencent.com", "0.cn.pool.ntp.org"
 local_network = "0.0.0.0/0" # Set the network segment that allows internal time synchronization
 
 # Ceph linux client
-ENABLE_CEPH_LINUX_CLIENT = "yes"
+ENABLE_CEPH_LINUX_CLIENT = "no"
 
 # Ceph kvm client
-ENABLE_CEPH_KVM_CLIENT = "no"
+ENABLE_CEPH_KVM_CLIENT = "yes"
 
 #Docker config
 HTTP_PROXY = "http://192.168.2.105:7897" # the http proxy if you have
