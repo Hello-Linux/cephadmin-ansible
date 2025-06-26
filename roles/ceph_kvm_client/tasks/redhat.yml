@@ -119,9 +119,10 @@
         dest: /etc/ceph/ceph_secret.xml
 
     - name: create the kvm secret for ceph rbd
-      shell: virsh secret-define --file /etc/ceph/ceph_secret.xml
+      shell: virsh secret-define --file /etc/ceph/ceph_secret.xml && touch /tmp/success_create_kvm_secret.txt
       args:
         warn: no
+        creates: /tmp/success_create_kvm_secret.txt
 
     - name: get the kvm secret uuid value
       shell: virsh secret-list | grep "client.{{ RBD_KVM_USER_NAME }}" | awk '{print $1}'
