@@ -67,5 +67,5 @@ RBD_KERNEL_IMAGE_FEATURE = "layering,striping"
 
 ENABLE_KVM_RBD_SERVICE = "true"
 RBD_KVM_POOL_NAME = "kvm-rbd"
-RBD_KVM_PG_NUMBER = "128" # default is 32. for more info look(https://docs.ceph.com/en/reef/rados/operations/pgcalc/)
+RBD_KVM_PG_NUMBER = "128"
 RBD_KVM_USER_NAME = "kvm-rbd"

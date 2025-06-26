@@ -133,3 +133,14 @@
       shell: sudo virsh secret-set-value --secret {{ kvm_secret_uuid.stdout }} --base64 $(cat /tmp/client.{{ RBD_KVM_USER_NAME }}.key) && rm /tmp/client.{{ RBD_KVM_USER_NAME }}.key /etc/ceph/ceph_secret.xml
       args:
         warn: no
+
+    - name: generate kvm storage pool about rbd
+      template:
+        src: libvirt-rbd-pool.xml.j2 
+        dest: /etc/ceph/libvirt-rbd-pool.xml
+
+    - name: start the kvm storage pool service with rbd 
+      shell: virsh pool-define libvirt-rbd-pool.xml && virsh pool-autostart {{ RBD_KVM_POOL_NAME }} && virsh pool-start {{ RBD_KVM_POOL_NAME }}
+      args:
+        warn: no
+        chdir: /etc/ceph/

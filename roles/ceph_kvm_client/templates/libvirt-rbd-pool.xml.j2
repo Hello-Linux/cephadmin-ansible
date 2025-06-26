@@ -1,0 +1,16 @@
+{#kvm pool xml template file#}
+<pool type="rbd">
+  <name>{{ RBD_KVM_POOL_NAME }}</name>
+  <source>
+    <name>{{ RBD_KVM_POOL_NAME }}</name>
+    {% for host in groups['ceph_cluster'] %}
+      {% if 'mon' in hostvars[host]['label'] %}
+    <host name='{{ hostvars[host]['ansible_host'] }}' port='6789'/>
+      {% endif %}
+    {% endfor %}
+    <auth username='{{ RBD_KVM_USER_NAME }}' type='ceph'>
+      <secret uuid='{{ kvm_secret_uuid.stdout }}'/>
+    </auth>
+  </source>
+</pool>
+
