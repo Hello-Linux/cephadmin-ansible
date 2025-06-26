@@ -125,12 +125,13 @@
       register: kvm_secret_uuid
 
     - name: Get the client.{{ RBD_KVM_USER_NAME }} key and save the key string to a file
-      shell: ceph auth get-key client.{{ RBD_KVM_USER_NAME }} | tee /tmp/client.{{ RBD_KVM_USER_NAME }}.key
+      shell: cat /etc/ceph/ceph.client.{{ RBD_KVM_USER_NAME }}.keyring | awk 'NR==2 {print $3}'
       args:
         warn: no
+      register: ceph_user_key
 
     - name: Set the UUID of the secret about kvm 
-      shell: sudo virsh secret-set-value --secret {{ kvm_secret_uuid.stdout }} --base64 $(cat /tmp/client.{{ RBD_KVM_USER_NAME }}.key) && rm /tmp/client.{{ RBD_KVM_USER_NAME }}.key /etc/ceph/ceph_secret.xml
+      shell: virsh secret-set-value --secret {{ kvm_secret_uuid.stdout }} --base64 {{ ceph_user_key.stdout }} && rm /tmp/client.{{ RBD_KVM_USER_NAME }}.key /etc/ceph/ceph_secret.xml
       args:
         warn: no
 
