@@ -22,12 +22,6 @@ ceph-client01 ansible_host=192.168.124.10
 ntp_servers = ["ntp1.aliyun.com", "time1.cloud.tencent.com", "0.cn.pool.ntp.org"] # ntp common servers
 local_network = "0.0.0.0/0" # Set the network segment that allows internal time synchronization
 
-# Ceph linux client
-ENABLE_CEPH_LINUX_CLIENT = "no"
-
-# Ceph kvm client
-ENABLE_CEPH_KVM_CLIENT = "yes"
-
 #Docker config
 HTTP_PROXY = "http://192.168.2.105:7897" # the http proxy if you have
 HTTPS_PROXY = "http://192.168.2.105:7897" # the https proxy if you have
@@ -60,7 +54,7 @@ NFS_PSEUDO_PATH = "/data"
 
 # RBD storage config
 # Linux kernel client config
-ENABLE_KERNEL_RBD_SERVICE = "true"
+ENABLE_CEPH_LINUX_CLIENT = "no"
 RBD_KERNEL_POOL_NAME = "kernel-rbd"
 RBD_KERNEL_PG_NUMBER = "128" # default is 32. for more info look(https://docs.ceph.com/en/reef/rados/operations/pgcalc/)
 RBD_KERNEL_USER_NAME = "kernel-rbd"
@@ -68,7 +62,8 @@ RBD_KERNEL_IMAGE_NAME = "kernel_image_01"
 RBD_KERNEL_IMAGE_SIZE = "1024" #image size (in M/G/T) [default: M]
 RBD_KERNEL_IMAGE_FEATURE = "layering,striping"
 
-ENABLE_KVM_RBD_SERVICE = "true"
+# kvm client config
+ENABLE_CEPH_KVM_CLIENT = "yes"
 RBD_KVM_POOL_NAME = "kvm-rbd"
 RBD_KVM_PG_NUMBER = "128"
 RBD_KVM_USER_NAME = "kvm-rbd"

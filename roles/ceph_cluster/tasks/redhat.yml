@@ -131,7 +131,7 @@
       run_once: true
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
   when:
-    - ENABLE_RBD_KERNEL_SERVICE == "true"
+    - ENABLE_CEPH_LINUX_CLIENT == "yes"
 
 - name: Init userdefine kvm rbd storage
   block:
@@ -156,4 +156,4 @@
       delegate_to: "{{ groups['ceph_cluster'][0] }}"
       when: deploy_role == 'main'
   when:
-    - ENABLE_RBD_KVM_SERVICE == "true"
+    - ENABLE_CEPH_KVM_CLIENT == "yes"
