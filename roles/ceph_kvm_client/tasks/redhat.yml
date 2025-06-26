@@ -136,6 +136,7 @@
 
     - name: generate kvm storage pool about rbd
       template:
+        lstrip_blocks: true
         src: libvirt-rbd-pool.xml.j2 
         dest: /etc/ceph/libvirt-rbd-pool.xml
 
